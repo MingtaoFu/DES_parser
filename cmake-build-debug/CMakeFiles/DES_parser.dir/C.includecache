@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/mingtao/CLionProjects/DES_parser/main.c
+stdio.h
+-
+string.h
+-
+stdlib.h
+-
+unitypes.h
+-
+
