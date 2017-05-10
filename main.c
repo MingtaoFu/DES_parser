@@ -2,90 +2,479 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unitypes.h>
+#include <gtk/gtk.h>
+#include <fcntl.h>
+
+#include "tables.h"
 
 #define CHARLEN 16
-#define BITLEN 64
 
-void IP(char input[CHARLEN]);
+uint64_t char2bit(char *input);
 uint8_t char2num(char ch);
+uint32_t F(uint64_t input, uint64_t k);
 
-const char IP_table[BITLEN] = {
-        58, 50, 42, 34, 26, 18, 10, 2,
-        60, 52, 44, 36, 28, 20, 12, 4,
-        62, 54, 46, 38, 30, 22, 14, 6,
-        64, 56, 48, 40, 32, 24, 16, 8,
-        57, 49, 41, 33, 25, 17,  9, 1,
-        59, 51, 43, 35, 27, 19, 11, 3,
-        61, 53, 45, 37, 29, 21, 13, 5,
-        63, 55, 47, 39, 31, 23, 15, 7
+void E2(uint32_t input);
+uint64_t PC_2(int num);
+uint64_t E(uint32_t input);
+uint32_t left = 0;
+uint32_t right = 0;
+void IP(uint64_t input);
+uint64_t IP_inverse();
+uint8_t xx[6];
+uint32_t loop_lmov(uint32_t input, int num);
+uint64_t PC_22(int num);
+uint32_t loop_rmov(uint32_t input, int num);
+uint64_t decode(uint64_t bits);
+uint64_t IP_inverse2();
+void encode_num(char* input);
+
+int mov[] = {
+        1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
 };
 
-
-
-const char S[8][4][16] = {
-        {
-                {14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7},
-                {0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8},
-                {4,1,14,8,13,6,2,11,15,12,9,7,3,10,5,0},
-                {15,12,8,2,4,9,1,7,5,11,3,14,10,0,6,13}
-        },
-//S2
-        {
-                {15,1,8,14,6,11,3,4,9,7,2,13,12,0,5,10},
-                {3,13,4,7,15,2,8,14,12,0,1,10,6,9,11,5},
-                {0,14,7,11,10,4,13,1,5,8,12,6,9,3,2,15},
-                {13,8,10,1,3,15,4,2,11,6,7,12,0,5,14,9}
-        },
-//S3
-        {
-                {10,0,9,14,6,3,15,5,1,13,12,7,11,4,2,8},
-                {13,7,0,9,3,4,6,10,2,8,5,14,12,11,15,1},
-                {13,6,4,9,8,15,3,0,11,1,2,12,5,10,14,7},
-                {1,10,13,0,6,9,8,7,4,15,14,3,11,5,2,12}
-        },
-//S4
-        {
-                {7,13,14,3,0,6,9,10,1,2,8,5,11,12,4,15},
-                {13,8,11,5,6,15,0,3,4,7,2,12,1,10,14,9},
-                {10,6,9,0,12,11,7,13,15,1,3,14,5,2,8,4},
-                {3,15,0,6,10,1,13,8,9,4,5,11,12,7,2,14}
-        },
-//S5
-        {
-                {2,12,4,1,7,10,11,6,8,5,3,15,13,0,14,9},
-                {14,11,2,12,4,7,13,1,5,0,15,10,3,9,8,6},
-                {4,2,1,11,10,13,7,8,15,9,12,5,6,3,0,14},
-                {11,8,12,7,1,14,2,13,6,15,0,9,10,4,5,3}
-        },
-//S6
-        {
-                {12,1,10,15,9,2,6,8,0,13,3,4,14,7,5,11},
-                {10,15,4,2,7,12,9,5,6,1,13,14,0,11,3,8},
-                {9,14,15,5,2,8,12,3,7,0,4,10,1,13,11,6},
-                {4,3,2,12,9,5,15,10,11,14,1,7,6,0,8,13}
-        },
-//S7
-        {
-                {4,11,2,14,15,0,8,13,3,12,9,7,5,10,6,1},
-                {13,0,11,7,4,9,1,10,14,3,5,12,2,15,8,6},
-                {1,4,11,13,12,3,7,14,10,15,6,8,0,5,9,2},
-                {6,11,13,8,1,4,10,7,9,5,0,15,14,2,3,12}
-        },
-        //S8
-        {
-                {13,2,8,4,6,15,11,1,10,9,3,14,5,0,12,7},
-                {1,15,13,8,10,3,7,4,12,5,6,11,0,14,9,2},
-                {7,11,4,1,9,12,14,2,0,6,10,13,15,3,5,8},
-                {2,1,14,7,4,10,8,13,15,12,9,0,3,5,6,11}
-        }
+int mov2[] = {
+        1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1
 };
 
-int main() {
-    IP("abcdef1234567890");
-    uint8_t a = 2;
-    uint8_t b = 7;
-    printf("%d", a ^ b);
+void PC_1();
+
+char output_char[16];
+uint64_t k;
+uint32_t k_a;
+uint32_t k_b;
+
+uint64_t encode(uint64_t);
+char* encode_file(char* file_path);
+
+GtkWidget *window,  *encode_btn, *decode_btn, *file_encode_btn;
+GtkEntry *input, *output, *file, *file_output;
+
+static void
+print_hello (GtkWidget *widget,
+             gpointer   data)
+{
+    encode_num(gtk_entry_get_text(input));
+    gtk_entry_set_text(output, output_char);
+}
+
+static void
+print_hello2 (GtkWidget *widget,
+             gpointer   data)
+{
+    decode_num(gtk_entry_get_text(input));
+    gtk_entry_set_text(output, output_char);
+}
+
+static void
+print_hello3 (GtkWidget *widget,
+             gpointer   data)
+{
+    char* total_result = encode_file(gtk_entry_get_text(file));
+    gtk_entry_set_text(file_output, total_result);
+    free(total_result);
+}
+
+static void
+activate (GtkApplication* app,
+          gpointer        user_data)
+{
+    GtkGrid *grid, *row1, *row2;
+
+    window = gtk_application_window_new (app);
+    gtk_window_set_title (GTK_WINDOW (window), "Window");
+    gtk_window_set_default_size (GTK_WINDOW (window), 200, 200);
+
+
+    input = gtk_entry_new();
+    output = gtk_entry_new();
+    file = gtk_entry_new();
+    file_output = gtk_entry_new();
+    gtk_entry_set_placeholder_text(input, "input");
+    gtk_entry_set_placeholder_text(output, "output");
+    gtk_entry_set_placeholder_text(file, "file path");
+    gtk_entry_set_placeholder_text(file_output, "file output");
+
+    grid = gtk_grid_new();
+    gtk_container_add(GTK_CONTAINER(window), grid);
+
+    gtk_grid_attach(grid, input, 0, 0, 80, 40);
+    gtk_grid_attach(grid, output, 0, 40, 80, 40);
+
+    gtk_grid_insert_row(grid, 0);
+    gtk_grid_insert_row(grid, 40);
+
+    encode_btn = gtk_button_new();
+    decode_btn = gtk_button_new();
+    file_encode_btn = gtk_button_new();
+    gtk_button_set_label(encode_btn, "encode");
+    gtk_button_set_label(decode_btn, "decode");
+    gtk_button_set_label(file_encode_btn, "file encode");
+
+    gtk_grid_attach(grid, encode_btn, 0, 100, 20, 30);
+    gtk_grid_attach(grid, decode_btn, 60, 100, 20, 30);
+
+    g_signal_connect (encode_btn, "clicked", G_CALLBACK (print_hello), NULL);
+    g_signal_connect (decode_btn, "clicked", G_CALLBACK (print_hello2), NULL);
+    g_signal_connect (file_encode_btn, "clicked", G_CALLBACK (print_hello3), NULL);
+
+    gtk_grid_attach(grid, file, 0, 150, 20, 30);
+    gtk_grid_attach(grid, file_output, 0, 190, 20, 30);
+    gtk_grid_attach(grid, file_encode_btn, 0, 240, 20, 30);
+
+    gtk_widget_show_all (window);
+}
+
+
+int main(int argc, char **argv) {
+    //encode_file();
+
+    GtkApplication *app;
+    int status;
+
+    app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
+    g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
+    status = g_application_run (G_APPLICATION (app), argc, argv);
+    g_object_unref (app);
+
     return 0;
+}
+
+char* encode_file(char* file_path) {
+    char buf[8];
+    int file;
+    if ((file = open(file_path, O_RDONLY, 0)) == -1) {
+        printf("File opening error.\n");
+    }
+    ssize_t n;
+    uint64_t content;
+    uint64_t result;
+    char* total_output = (char*)malloc(sizeof(char));
+    total_output[0] = '\0';
+    memset(total_output, 0, 0);
+    int total_length = 1;
+    while ((n = read(file, buf, 8)) > 0) {
+        total_length += 16;
+
+        content = 0;
+        for (int i = 0; i < n; i++) {
+            content = content << 8;
+            content += buf[i];
+        }
+        ssize_t remain = 8 - n;
+        for (int i = 0; i < remain; i++) {
+            content = content << 8;
+        }
+        result = encode(content);
+
+
+        for (int i = 0; i < 16; i++) {
+            uint8_t num = (uint8_t)((result >> ((15 - i) * 4)) & 0xf);
+            sprintf(&output_char[i], "%x", num);
+        }
+
+        char* xx = (char*)malloc(sizeof(char) * total_length);
+        strcpy(xx, total_output);
+        strcat(xx, output_char);
+        free(total_output);
+        total_output = xx;
+    }
+    return total_output;
+}
+
+
+void encode_num(char* input) {
+    uint64_t bits = char2bit(input);
+    printf("输入数据对应的二进制：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(bits >> (64 - i)) & 1);
+    }
+    printf("\n\n");
+
+    uint64_t result = encode(bits);
+
+    for (int i = 0; i < 16; i++) {
+        uint8_t num = (uint8_t)((result >> ((15 - i) * 4)) & 0xf);
+        sprintf(&output_char[i], "%x", num);
+    }
+}
+
+void decode_num(char* input) {
+    uint64_t bits = char2bit(input);
+    printf("输入数据对应的二进制：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(bits >> (64 - i)) & 1);
+    }
+    printf("\n\n");
+
+    uint64_t result = decode(bits);
+
+    for (int i = 0; i < 16; i++) {
+        uint8_t num = (uint8_t)((result >> ((15 - i) * 4)) & 0xf);
+        sprintf(&output_char[i], "%x", num);
+    }
+}
+
+uint64_t decode(uint64_t bits) {
+    k = char2bit("aaaaaaaaaaaaaaaa");
+    printf("密钥对应的二进制：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(k >> (64 - i)) & 1);
+    }
+    printf("\n\n");
+
+    IP(bits);
+
+    uint32_t tmp = left;
+    left = right;
+    right = tmp;
+
+    for (int i = 0; i < 16; i++) {
+        printf("--------------- 第 %d 轮迭代 -------------\n\n", i);
+
+        uint32_t right1 = left;
+        uint32_t left1 = right ^ F(E(left), PC_22(mov2[i]));
+
+        left = left1;
+        right = right1;
+
+        printf("left 对应的二进制：\n");
+        for (int i = 1; i <= 32; i++) {
+            printf("%d", (int)(left >> (32 - i)) & 1);
+        }
+        printf("\n");
+        printf("right 对应的二进制：\n");
+        for (int i = 1; i <= 32; i++) {
+            printf("%d", (int)(right >> (32 - i)) & 1);
+        }
+        printf("\n\n");
+    }
+
+    uint64_t output = IP_inverse2();
+    return output;
+}
+
+uint64_t encode(uint64_t bits) {
+    k = char2bit("aaaaaaaaaaaaaaaa");
+    printf("密钥对应的二进制：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(k >> (64 - i)) & 1);
+    }
+    printf("\n\n");
+
+
+    PC_1();
+    printf("子密钥a对应的二进制：\n");
+    for (int i = 1; i <= 32; i++) {
+        printf("%d", (int)(k_a >> (32 - i)) & 1);
+    }
+    printf("\n");
+    printf("子密钥b对应的二进制：\n");
+    for (int i = 1; i <= 32; i++) {
+        printf("%d", (int)(k_b >> (32 - i)) & 1);
+    }
+    printf("\n\n");
+
+    IP(bits);
+    printf("left 对应的二进制：\n");
+    for (int i = 1; i <= 32; i++) {
+        printf("%d", (int)(left >> (32 - i)) & 1);
+    }
+    printf("\n");
+    printf("right 对应的二进制：\n");
+    for (int i = 1; i <= 32; i++) {
+        printf("%d", (int)(right >> (32 - i)) & 1);
+    }
+    printf("\n\n");
+
+    for (int i = 0; i < 16; i++) {
+        printf("--------------- 第 %d 轮迭代 -------------\n\n", i);
+
+        uint32_t left1 = right;
+        uint32_t right1 = left ^ F(E(right), PC_2(mov[i]));
+
+        left = left1;
+        right = right1;
+
+        printf("left 对应的二进制：\n");
+        for (int i = 1; i <= 32; i++) {
+            printf("%d", (int)(left >> (32 - i)) & 1);
+        }
+        printf("\n");
+        printf("right 对应的二进制：\n");
+        for (int i = 1; i <= 32; i++) {
+            printf("%d", (int)(right >> (32 - i)) & 1);
+        }
+        printf("\n\n");
+    }
+
+    uint64_t output = IP_inverse();
+
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(output >> (64 - i)) & 1);
+    }
+
+    return output;
+}
+
+void PC_1() {
+    uint64_t output = 0;
+    for (int i = 1; i <= 56; i++) {
+        output = output << 1;
+        uint8_t target_index =  PC_1_table[i - 1];
+        output += (k >> (64 - target_index)) & 1;
+    }
+    k_a = (uint32_t)((output >> 28) & 0xfffffff);
+    k_b = (uint32_t)(output & 0xfffffff);
+}
+
+uint64_t PC_22(int num) {
+    //将两个key合并
+    uint64_t tmp = k_a;
+    tmp = tmp << 28;
+    tmp += k_b;
+    printf("合并：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(tmp >> (64 - i)) & 1);
+    }
+    printf("\n\n");
+
+    uint64_t output = 0;
+    for (int i = 1; i <= 48; i++) {
+        output = output << 1;
+        uint8_t target_index =  PC_2_table[i - 1];
+        output += (tmp >> (56 - target_index)) & 1;
+    }
+    printf("查表得到最终k：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(output >> (64 - i)) & 1);
+    }
+    printf("\n\n");
+
+    /**
+     * 右移
+     */
+    k_a = loop_rmov(k_a, num);
+    k_b = loop_rmov(k_b, num);
+    printf("子密钥a循环右移 %d 次：\n", num);
+    for (int i = 1; i <= 32; i++) {
+        printf("%d", (int)(k_a >> (32 - i)) & 1);
+    }
+    printf("\n");
+    printf("子密钥b循环右移 %d 次：\n", num);
+    for (int i = 1; i <= 32; i++) {
+        printf("%d", (int)(k_b >> (32 - i)) & 1);
+    }
+    printf("\n\n");
+    return output;
+}
+
+uint64_t PC_2(int num) {
+    /**
+     * 先左移
+     */
+    k_a = loop_lmov(k_a, num);
+    k_b = loop_lmov(k_b, num);
+    printf("子密钥a循环左移 %d 次：\n", num);
+    for (int i = 1; i <= 32; i++) {
+        printf("%d", (int)(k_a >> (32 - i)) & 1);
+    }
+    printf("\n");
+    printf("子密钥b循环左移 %d 次：\n", num);
+    for (int i = 1; i <= 32; i++) {
+        printf("%d", (int)(k_b >> (32 - i)) & 1);
+    }
+    printf("\n\n");
+
+    //将两个key合并
+    uint64_t tmp = k_a;
+    tmp = tmp << 28;
+    tmp += k_b;
+    printf("合并：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(tmp >> (64 - i)) & 1);
+    }
+    printf("\n\n");
+
+    uint64_t output = 0;
+    for (int i = 1; i <= 48; i++) {
+        output = output << 1;
+        uint8_t target_index =  PC_2_table[i - 1];
+        output += (tmp >> (56 - target_index)) & 1;
+    }
+    printf("查表得到最终k：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(output >> (64 - i)) & 1);
+    }
+    printf("\n\n");
+    return output;
+}
+
+uint32_t loop_rmov(uint32_t input, int num) {
+    for (int i = 0; i < num; i++) {
+        uint32_t tail = input & 1;
+
+        /*
+        printf("tail：\n");
+        for (int i = 1; i <= 32; i++) {
+            printf("%d", (int)(tail >> (32 - i)) & 1);
+        }
+        printf("\n\n");
+         */
+
+        input = (input >> 1) & 0xfffffff;
+
+        /*
+        printf("input：\n");
+        for (int i = 1; i <= 32; i++) {
+            printf("%d", (int)(input >> (32 - i)) & 1);
+        }
+        printf("\n\n");
+         */
+
+        input += tail << 27;
+        /*
+        printf("input：\n");
+        for (int i = 1; i <= 32; i++) {
+            printf("%d", (int)(input >> (32 - i)) & 1);
+        }
+        printf("\n\n");
+         */
+    }
+    return input;
+}
+
+uint32_t loop_lmov(uint32_t input, int num) {
+    for (int i = 0; i < num; i++) {
+        uint32_t tail = (input >> 27) & 1;
+
+        /*
+        printf("tail：\n");
+        for (int i = 1; i <= 32; i++) {
+            printf("%d", (int)(tail >> (32 - i)) & 1);
+        }
+        printf("\n\n");
+         */
+
+        input = (input << 1) & 0xfffffff;
+
+        /*
+        printf("input：\n");
+        for (int i = 1; i <= 32; i++) {
+            printf("%d", (int)(input >> (32 - i)) & 1);
+        }
+        printf("\n\n");
+         */
+
+        input += tail;
+        /*
+        printf("input：\n");
+        for (int i = 1; i <= 32; i++) {
+            printf("%d", (int)(input >> (32 - i)) & 1);
+        }
+        printf("\n\n");
+         */
+    }
+    return input;
 }
 
 uint8_t char2num(char ch) {
@@ -104,82 +493,191 @@ uint8_t char2num(char ch) {
     }
 }
 
-void IP(char input[CHARLEN]) {
-    if (strlen(input) != CHARLEN) {
-        printf("输入长度有误\n");
+
+void IP(uint64_t input) {
+    /**
+     * 实现查表转换功能
+     */
+    for (int i = 1; i <= 32; i++) {
+        left = left << 1;
+        int target_index = IP_table[i - 1];
+        left += (input >> (64 - target_index)) & 1;
     }
 
-    char bits[BITLEN];
-    int bit_index = BITLEN - 1;
-    for (int i = CHARLEN - 1; i >= 0; i--) {
-        char num = char2num(input[i]);
-        for (int j = 0; j < 4; j++) {
-            char remain = (char)(num % 2);
-            num = (char)(num / 2);
-            bits[bit_index] = remain;
-            bit_index--;
-        }
+    for (int i = 33; i <= 64; i++) {
+        right = right << 1;
+        int target_index = IP_table[i - 1];
+        right += (input >> (64 - target_index)) & 1;
     }
+}
 
-    for (int i = 0; i < BITLEN; i++) {
-        printf("%2d", i);
-    }
-    printf("\n");
+uint64_t IP_inverse2() {
+    uint64_t input = (uint64_t)left;
+    input = (input << 32) + right;
 
-    for (int i = 0; i < BITLEN; i++) {
-        printf("%2d", bits[i]);
+    printf("left right 合并：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(input >> (64 - i)) & 1);
     }
-    printf("\n");
+    printf("\n\n");
+
+    uint64_t output = 0;
 
     /**
      * 实现查表转换功能
      */
-    char output[BITLEN];
-    for (int i = 0; i < BITLEN; i++) {
-        output[i] = bits[IP_table[i] - 1];
+    for (int i = 1; i <= 64; i++) {
+        output = output << 1;
+        uint8_t target_index =  IP_inverse_table[i - 1];
+        output += (input >> (64 - target_index)) & 1;
     }
-
-    for (int i = 0; i < BITLEN; i++) {
-        printf("%2d", output[i]);
+    printf("查表转换：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(output >> (64 - i)) & 1);
     }
-}
-
-const char E_table[48] = {
-        32,  1,  2,  3,  4,  5,
-         4,  5,  6,  7,  8,  9,
-         8,  9, 10, 11, 12, 13,
-        12, 13, 14, 15, 16, 17,
-        16, 17, 18, 19, 20, 21,
-        20, 21, 22, 23, 24, 25,
-        24, 25, 26, 27, 28, 29,
-        28, 29, 30, 31, 31,  1
-};
-
-/**
- * @todo 一定要记得free
- * @param input
- * @return
- */
-char* E(char input[32]) {
-    char* output = malloc(sizeof(char) * 48);
-    printf("E output: ");
-    for (int i = 0; i < 48; i++) {
-        output[i] = input[E_table[i] - 1];
-        printf("%2d", output[i]);
-    }
-    printf("\n");
+    printf("\n\n");
     return output;
 }
 
+uint64_t IP_inverse() {
+    uint64_t input = (uint64_t)right;
+    input = (input << 32) + left;
+
+    printf("right left 合并：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(input >> (64 - i)) & 1);
+    }
+    printf("\n\n");
+
+    uint64_t output = 0;
+
+    /**
+     * 实现查表转换功能
+     */
+    for (int i = 1; i <= 64; i++) {
+        output = output << 1;
+        uint8_t target_index =  IP_inverse_table[i - 1];
+        output += (input >> (64 - target_index)) & 1;
+    }
+    printf("查表转换：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(output >> (64 - i)) & 1);
+    }
+    printf("\n\n");
+    return output;
+}
+
+uint64_t char2bit(char *input) {
+    if (strlen(input) != CHARLEN) {
+        printf("输入长度有误\n");
+    }
+
+    uint64_t output = 0;
+    uint64_t bit;
+    for (int i = 1; i <= CHARLEN; i++) {
+        uint8_t num = char2num(input[i - 1]);
+        for (int j = 0; j < 4; j++) {
+            int mov = ((CHARLEN - i) * 4 + j);
+            bit = (uint64_t)(num % 2) << mov;
+            num /= 2;
+            output += bit;
+        }
+    }
+    return output;
+}
+
+uint64_t E(uint32_t input) {
+    uint64_t output = 0;
+    for (int i = 1; i <= 48; i++) {
+        output = output << 1;
+        output += (input >> (32 - E_table[i - 1])) & 1;
+    }
+    printf("E 运算结果：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(output >> (64 - i)) & 1);
+    }
+    printf("\n\n");
+    return output;
+}
+
+void E2(uint32_t input) {
+    printf("\n");
+    for (int i = 0; i < 6; i++) {
+        xx[i] = 0;
+        for (int j = 0; j < 8; j++) {
+            xx[i] = xx[i] << 1;
+            int a = (input >> (32 - E_table[i * 8 + j])) & 1;
+            printf("%d", a);
+            xx[i] += (input >> (32 - E_table[i * 8 + j])) & 1;
+        }
+
+        printf("\n");
+        printf("%d ", xx[i]);
+    }
+}
+
 /**
+ * 测试通过
+ *
+ * uint8_t a[6] = {0, 0, 0, 0, 0, 0};
+ * uint8_t b[6] = {0, 0, 0, 0, 0, 0};
+ * 结果为每个表的第一个数
+ *
+ * uint8_t a[6] = {0, 0, 0, 0, 0, 0};
+ * uint8_t b[6] = {255, 255, 255, 255, 255, 255};
+ * 结果为每个表的最末一个数
+ *
  * 48 Bits, 48 Bits
  * @param input
  * @param k
  */
-void F(uint8_t input[6], uint8_t k[6]) {
+uint32_t F(uint64_t input, uint64_t k) {
     //uint8_t xor[6];
+    uint64_t xor = input ^ k;
 
-    for (int i = 0; i < 6; i++) {
-        xor[i] = input[i] ^ k[i];
+    printf("E K 异或：\n");
+    for (int i = 1; i <= 64; i++) {
+        printf("%d", (int)(xor >> (64 - i)) & 1);
     }
+    printf("\n\n");
+
+    //xor = xor << 16;
+
+    uint32_t output = 0;
+    for (int i = 0; i < 8; i++) {
+        output = output << 4;
+
+        uint8_t x = 0;
+        uint8_t y = 0;
+
+        x += (xor >> 47) & 1;
+        x = x << 1;
+        x += (xor >> 42) & 1;
+
+        y = (uint8_t)((xor >> 43) & 0xf);
+
+        output += S[i][x][y];
+
+        xor = xor << 6;
+    }
+    printf("48 -> 32：\n");
+    for (int i = 1; i <= 32; i++) {
+        printf("%d", (int)(output >> (32 - i)) & 1);
+    }
+    printf("\n\n");
+
+    uint32_t output2 = 0;
+    for (int i = 1; i <= 32; i++) {
+        output2 = output2 << 1;
+        output2 += (output >> (32 - P[i - 1])) & 1;
+    }
+
+    /*
+    printf("\n");
+    for (int i = 7; i >= 0; i--) {
+        printf("%d ", (output >> (4 * i)) & 15);
+    }
+     */
+
+    return output2;
 }

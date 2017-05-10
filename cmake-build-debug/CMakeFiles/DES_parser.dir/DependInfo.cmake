@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
+  "/home/mingtao/CLionProjects/DES_parser/gui.c" "/home/mingtao/CLionProjects/DES_parser/cmake-build-debug/CMakeFiles/DES_parser.dir/gui.c.o"
   "/home/mingtao/CLionProjects/DES_parser/main.c" "/home/mingtao/CLionProjects/DES_parser/cmake-build-debug/CMakeFiles/DES_parser.dir/main.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")

@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/DES_parser.dir/main.c.o"
+  "CMakeFiles/DES_parser.dir/gui.c.o"
   "DES_parser.pdb"
   "DES_parser"
 )

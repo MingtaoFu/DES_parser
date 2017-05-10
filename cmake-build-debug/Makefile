@@ -111,19 +111,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named ip_cap
-
-# Build rule for target.
-ip_cap: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ip_cap
-.PHONY : ip_cap
-
-# fast build rule for target.
-ip_cap/fast:
-	$(MAKE) -f CMakeFiles/ip_cap.dir/build.make CMakeFiles/ip_cap.dir/build
-.PHONY : ip_cap/fast
-
-#=============================================================================
 # Target rules for targets named DES_parser
 
 # Build rule for target.
@@ -136,13 +123,39 @@ DES_parser/fast:
 	$(MAKE) -f CMakeFiles/DES_parser.dir/build.make CMakeFiles/DES_parser.dir/build
 .PHONY : DES_parser/fast
 
+gui.o: gui.c.o
+
+.PHONY : gui.o
+
+# target to build an object file
+gui.c.o:
+	$(MAKE) -f CMakeFiles/DES_parser.dir/build.make CMakeFiles/DES_parser.dir/gui.c.o
+.PHONY : gui.c.o
+
+gui.i: gui.c.i
+
+.PHONY : gui.i
+
+# target to preprocess a source file
+gui.c.i:
+	$(MAKE) -f CMakeFiles/DES_parser.dir/build.make CMakeFiles/DES_parser.dir/gui.c.i
+.PHONY : gui.c.i
+
+gui.s: gui.c.s
+
+.PHONY : gui.s
+
+# target to generate assembly for a file
+gui.c.s:
+	$(MAKE) -f CMakeFiles/DES_parser.dir/build.make CMakeFiles/DES_parser.dir/gui.c.s
+.PHONY : gui.c.s
+
 main.o: main.c.o
 
 .PHONY : main.o
 
 # target to build an object file
 main.c.o:
-	$(MAKE) -f CMakeFiles/ip_cap.dir/build.make CMakeFiles/ip_cap.dir/main.c.o
 	$(MAKE) -f CMakeFiles/DES_parser.dir/build.make CMakeFiles/DES_parser.dir/main.c.o
 .PHONY : main.c.o
 
@@ -152,7 +165,6 @@ main.i: main.c.i
 
 # target to preprocess a source file
 main.c.i:
-	$(MAKE) -f CMakeFiles/ip_cap.dir/build.make CMakeFiles/ip_cap.dir/main.c.i
 	$(MAKE) -f CMakeFiles/DES_parser.dir/build.make CMakeFiles/DES_parser.dir/main.c.i
 .PHONY : main.c.i
 
@@ -162,7 +174,6 @@ main.s: main.c.s
 
 # target to generate assembly for a file
 main.c.s:
-	$(MAKE) -f CMakeFiles/ip_cap.dir/build.make CMakeFiles/ip_cap.dir/main.c.s
 	$(MAKE) -f CMakeFiles/DES_parser.dir/build.make CMakeFiles/DES_parser.dir/main.c.s
 .PHONY : main.c.s
 
@@ -174,8 +185,10 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... ip_cap"
 	@echo "... DES_parser"
+	@echo "... gui.o"
+	@echo "... gui.i"
+	@echo "... gui.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
