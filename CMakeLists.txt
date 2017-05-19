@@ -3,7 +3,7 @@ project(DES_parser)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.c tables.h gui.c)
+set(SOURCE_FILES main.c tables.h gui.c main.h interface.cc core.cc)
 
 cmake_minimum_required(VERSION 3.5)
 project(DES_parser)
