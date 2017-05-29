@@ -55,6 +55,21 @@ void des_encrypt(uint64_t* bits) {
     print_storage(sto.states[19], *bits);
 }
 
+void des_encrypt_file(uint64_t* bits) {
+	uint32_t left, right;
+
+	ip(bits, &left, &right);
+
+	for (int i = 0; i < 15; i++) {
+		round(&left, &right, i);
+	}
+
+    round(&left, &right, 15);
+	exchange(&left, &right);
+
+	ip_inverse(bits, &left, &right);
+}
+
  void des_decrypt(uint64_t* bits) {
     uint32_t left, right;
     ip(bits, &left, &right);

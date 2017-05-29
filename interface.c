@@ -2,6 +2,7 @@
 // Created by mingtao on 5/19/17.
 //
 
+#include <uv.h>
 #include "main.h"
 char output_char[16];
 
@@ -60,7 +61,6 @@ void decrypt_num(char *input) {
 void decode_file2() {
 
 }
-
 
 void decode_file() {
     char buf[8];
@@ -146,18 +146,36 @@ void decode_file() {
     fclose(file_output);
 }
 
-char* encode_file(char* file_path) {
-    char buf[8];
-	FILE *file;
+char* encrypt_file(char *file_in, char *file_out) {
+/*
+    uv_loop_t* loop;
 
+    uv_fs_t open_req;
+    uv_fs_t read_req;
+
+    loop = uv_default_loop();
+    printf("daa");
+    int r = uv_fs_open(loop, &open_req, file_in, O_RDONLY, S_IRUSR, NULL);
+    printf("r: %d\n", open_req.result);
+    uint32_t a = 0;
+    uv_buf_t iov = uv_buf_init(&a, sizeof(a));
+    uv_fs_read(uv_default_loop(), &read_req, open_req.result,
+               &iov, 1, -1, NULL);
+    printf("%x",a);
+    //sprintf(file_in, "%x", a);
+
+    return NULL;
+    */
+	FILE *file;
 	FILE *file_output;
 
+    file_output = fopen(file_out, "w");
+    file = fopen(file_in, "r");
+    printf("%d\n", file_output == NULL);
+    printf(file_in);
+    printf("%d\n", file == NULL);
 
-    file_output = fopen("/home/mingtao/xxx", "w");
-
-    file = fopen("/home/mingtao/xxx", "r");
-
-
+    //return NULL;
 	/*
     if ((file = open(file_path, O_RDONLY, 0)) == -1) {
         printf("File opening error.\n");
@@ -169,20 +187,14 @@ char* encode_file(char* file_path) {
 
     uint64_t total_len = 0;
     while ((n = fread(&content, 8, 1, file)) > 0) {
-
         ssize_t remain = 8 - n;
-        /*
-        for (int i = 0; i < remain; i++) {
-            content = content << 8;
-        }
-         */
 
         uint64_t content2 = 0;
         for (int i = 0; i < 8; i++) {
             content2 <<= 8;
             content2 += (content >> (i * 8)) & 0xff;
         }
-        des_encrypt(&content2);
+        des_encrypt_file(&content2);
         uint64_t result2 = 0;
         for (int i = 0; i < 8; i++) {
             result2 <<= 8;
@@ -193,33 +205,29 @@ char* encode_file(char* file_path) {
 
         fwrite(&result2, sizeof(result2), 1, file_output );
 
-//        for (int i = 0; i < 16; i++) {
-//            uint8_t num = (uint8_t)((result >> ((15 - i) * 4)) & 0xf);
-//            sprintf(&output_char[i], "%x", num);
-//        }
-
-//        char* xx = (char*)malloc(sizeof(char) * total_length);
-//        strcpy(xx, total_output);
-//        strcat(xx, output_char);
-//        free(total_output);
-//        total_output = xx;
     }
+    file_in[0] = (char)((n==0)+0x30);
+    file_in[1] = (char)((file == NULL)+0x30);
+    file_in[2] = '\0';
 
-    des_encrypt(&total_len);
+    des_encrypt_file(&total_len);
     uint8_t len_encoded_byte;
     for (int i = 7; i >= 0; i--) {
         len_encoded_byte = (uint8_t)((total_len >> i * 8) & 0xff);
         fwrite(&len_encoded_byte, sizeof(len_encoded_byte), 1, file_output);
     }
     //printf("%" PRIu64 "\n", total_len);
+    /*
     printf("len_encoded：\n");
     for (int i = 1; i <= 64; i++) {
         printf("%d", (int)(total_len >> (64 - i)) & 1);
     }
     printf("\n");
+     */
 
     fclose(file);
     fclose(file_output);
+    return NULL;
 }
 
 void print(uint64_t bits) {

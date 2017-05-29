@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     } else if (!strcmp(argv[1], "-dn")) {
         decrypt_num(argv[3]);
     } else if (!strcmp(argv[1], "-ef")) {
-        encode_file(argv[3]);
+        encrypt_file(argv[3], argv[4]);
     } else if (!strcmp(argv[1], "-df")) {
 
     } else {

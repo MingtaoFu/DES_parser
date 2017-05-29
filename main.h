@@ -20,6 +20,7 @@ uint64_t K_list[16];
 /*------------------------------- core ---------------------------------*/
 
 void des_encrypt(uint64_t* bits);
+void des_encrypt_file(uint64_t* bits);
 void des_decrypt(uint64_t*);
 uint32_t f(uint32_t R, uint64_t K);
 
@@ -29,7 +30,6 @@ uint32_t f(uint32_t R, uint64_t K);
 void encrypt_num(char *input);
 void decrypt_num(char *input);
 void decode_file();
-char* encode_file(char* file_path);
 uint64_t char2bit(char *input);
 uint32_t char2bit32(char *input);
 void init_key(uint64_t key);
@@ -39,6 +39,7 @@ void e_computing(char* a, char* b);
 void sbox_computing(char* input, char* output);
 uint64_t E(uint32_t input);
 uint32_t S_box(uint64_t input);
+char* encrypt_file(char *file_in, char *file_out);
 
 
 

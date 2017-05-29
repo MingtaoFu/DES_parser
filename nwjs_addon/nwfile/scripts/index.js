@@ -5,6 +5,7 @@ try {
     var XOR_computing = addon.XOR_computing;
     var E_computing = addon.E_computing;
     var SBOX_computing = addon.SBOX_computing;
+    var file_operation = addon.file_operation;
 
 	var data_key_DOM = document.querySelector("#data-key");
 	var data_input_DOM = document.querySelector("#data-input");
@@ -85,6 +86,15 @@ try {
 
         chooser.trigger('click');
     });
+
+    var file_key_DOM = document.querySelector("#file-key");
+    document.querySelector("#file-encrypt-btn").addEventListener("click", function() {
+        console.log(11)
+        file_operation("-ef", file_key_DOM.value,  open_path_DOM.value, save_path_DOM.value, function (e) {
+            alert(e);
+        });
+    });
+
 
 } catch (e) {
 	document.write(e);

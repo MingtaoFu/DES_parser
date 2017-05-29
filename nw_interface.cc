@@ -13,6 +13,7 @@ namespace demo {
 	using v8::String;
 	using v8::Value;
 	using v8::Array;
+	using v8::Function;
 
 	void F_computing(const FunctionCallbackInfo<Value>& args) {
 		Isolate* isolate = args.GetIsolate();
@@ -64,6 +65,32 @@ namespace demo {
 		args.GetReturnValue().Set(String::NewFromUtf8(isolate, output));
 	}
 
+	void file_operation(const FunctionCallbackInfo<Value>& args) {
+		printf("1\n");
+		Isolate* isolate = args.GetIsolate();
+
+		String::Utf8Value v8_mode(args[0]->ToString());
+		String::Utf8Value v8_key(args[1]->ToString());
+		String::Utf8Value v8_in_path(args[2]->ToString());
+		String::Utf8Value v8_out_path(args[3]->ToString());
+		Local<Function> cb = Local<Function>::Cast(args[4]);
+		char* mode = *v8_mode;
+		char* key = *v8_key;
+		char* in = *v8_in_path;
+		char* out = *v8_out_path;
+
+		init_key(char2bit(key));
+
+		if(!strcmp(mode, "-ef")) {
+			encrypt_file(in, out);
+			const unsigned argc = 1;
+			Local<Value> argv[argc] = { String::NewFromUtf8(isolate, in) };
+			cb->Call(Null(isolate), argc, argv);
+		} else if (!strcmp(mode, "-df")) {
+			//decrypt_file(in, out);
+		}
+	}
+
 	void Method(const FunctionCallbackInfo<Value>& args) {
 		Isolate* isolate = args.GetIsolate();
 
@@ -112,6 +139,7 @@ namespace demo {
 		NODE_SET_METHOD(exports, "XOR_computing", XOR_computing);
 		NODE_SET_METHOD(exports, "E_computing", E_computing);
 		NODE_SET_METHOD(exports, "SBOX_computing", SBOX_computing);
+		NODE_SET_METHOD(exports, "file_operation", file_operation);
 	}
 
 	NODE_MODULE(addon, init)
