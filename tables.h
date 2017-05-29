@@ -6,7 +6,7 @@
 #define DES_PARSER_TABLES_H
 
 #define BITLEN 64
-
+#define CHARLEN 16
 const uint8_t IP_table[BITLEN] = {
         58, 50, 42, 34, 26, 18, 10, 2,
         60, 52, 44, 36, 28, 20, 12, 4,
