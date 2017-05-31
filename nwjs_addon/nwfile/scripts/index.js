@@ -58,6 +58,9 @@ try {
 	});
 
 	document.querySelector("#F-form").addEventListener("submit", function (e) {
+	    if ($("button", this).hasClass("disabled")) {
+		    return false;
+        }
 	    e.preventDefault();
 	    this.result.value = F_computing(this.R.value, "0000" + this.K.value);
     });
@@ -67,12 +70,18 @@ try {
 	    this.result.value = XOR_computing(this.param1.value, this.param2.value);
     });
 
-	document.querySelector("#E-form").addEventListener("submit", function (e) {
+    document.querySelector("#E-form").addEventListener("submit", function (e) {
+        if ($("button", this).hasClass("disabled")) {
+            return false;
+        }
 	    e.preventDefault();
 	    this.result.value = E_computing(this.r.value);
     });
 
 	document.querySelector("#SBOX-form").addEventListener("submit", function (e) {
+        if ($("button", this).hasClass("disabled")) {
+		    return false;
+        }
 		e.preventDefault();
 		this.result.value = SBOX_computing("0000" + this.input.value);
 	});
