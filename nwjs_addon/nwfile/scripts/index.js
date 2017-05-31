@@ -35,6 +35,28 @@ try {
 		}
 	});
 
+	document.querySelector("#data-decrypt-btn").addEventListener("click", function() {
+		if ($(this).hasClass("disabled")) {
+		    return false;
+        }
+
+		var key = data_key_DOM.value;
+		var input = data_input_DOM.value;
+		var ouput = DES_data("-dn", key, input);
+		//alert(output);
+		data_output_DOM.value = ouput.cipher_text;
+
+		var keys = ouput.keys;
+		for (var i in keys) {
+			keys_container[i].innerText = keys[i];
+		}
+
+		var states = ouput.states;
+		for (var i in states) {
+			states_container[i].innerText = states[i];
+		}
+	});
+
 	document.querySelector("#F-form").addEventListener("submit", function (e) {
 	    e.preventDefault();
 	    this.result.value = F_computing(this.R.value, "0000" + this.K.value);
@@ -51,9 +73,9 @@ try {
     });
 
 	document.querySelector("#SBOX-form").addEventListener("submit", function (e) {
-	    e.preventDefault();
-	    this.result.value = SBOX_computing("0000" + this.input.value);
-    });
+		e.preventDefault();
+		this.result.value = SBOX_computing("0000" + this.input.value);
+	});
 
 	var open_path_DOM = document.querySelector("#open-path");
     var save_path_DOM = document.querySelector("#save-path");
@@ -89,7 +111,6 @@ try {
 
     var file_key_DOM = document.querySelector("#file-key");
     document.querySelector("#file-encrypt-btn").addEventListener("click", function() {
-        console.log(11)
         file_operation("-ef", file_key_DOM.value,  open_path_DOM.value, save_path_DOM.value, function (e) {
             alert(e);
         });

@@ -70,14 +70,19 @@ void des_encrypt_file(uint64_t* bits) {
 	ip_inverse(bits, &left, &right);
 }
 
- void des_decrypt(uint64_t* bits) {
+void des_decrypt(uint64_t* bits) {
+    print_storage(sto.states[0], *bits);
     uint32_t left, right;
     ip(bits, &left, &right);
+    print_storage2(sto.states[1], left, right);
     exchange(&left, &right);
     for (int i = 15; i >= 0; i--) {
         round(&right, &left, i);
+        print_storage2(sto.states[17 - i], left, right);
     }
     ip_inverse(bits, &left, &right);
+    print_storage(sto.states[18], *bits);
+    print_storage(sto.states[19], *bits);
 }
 
 uint64_t decode(uint64_t bits) {
@@ -470,9 +475,6 @@ uint32_t S_box(uint64_t input) {
     }
     return output;
 }
-
-
-
 
 void encrypt2(uint64_t* bits) {
     uint32_t left, right;

@@ -34,7 +34,7 @@ void e_computing(char* R, char* output) {
 }
 
 void sbox_computing(char* input, char* output) {
-    uint64_t r = char2bit32(input);
+    uint64_t r = char2bit(input);
     uint32_t output_num = S_box(r);
     for (int i = 0; i < 8; i++) {
 		uint8_t num = (uint8_t)((output_num >> ((7 - i) * 4)) & 0xf);
@@ -55,7 +55,10 @@ void encrypt_num(char *input) {
 void decrypt_num(char *input) {
     uint64_t bits = char2bit(input);
     des_decrypt(&bits);
-    print(bits);
+    for (int i = 0; i < 16; i++) {
+		uint8_t num = (uint8_t)((bits >> ((15 - i) * 4)) & 0xf);
+		sprintf(&input[i], "%x", num);
+	}
 }
 
 void decode_file2() {
