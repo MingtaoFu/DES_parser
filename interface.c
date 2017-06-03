@@ -2,9 +2,8 @@
 // Created by mingtao on 5/19/17.
 //
 
-#include <uv.h>
+#include <netinet/in.h>
 #include "main.h"
-char output_char[16];
 
 void print(uint64_t bits);
 
@@ -61,87 +60,99 @@ void decrypt_num(char *input) {
 	}
 }
 
-void decode_file2() {
-
+uint64_t ntohl64(uint64_t host) {
+    uint64_t ret = 0;
+    uint32_t high,low;
+    low = (uint32_t)(host & 0xFFFFFFFF);
+    high = (uint32_t)((host >> 32) & 0xFFFFFFFF);
+    low = ntohl(low);
+    high = ntohl(high);
+    ret = low;
+    ret <<= 32;
+    ret |= high;
+    return ret;
 }
 
-void decode_file() {
-    char buf[8];
+void decrypt_file(char* in, char* out) {
+    remove(out);
+
+    // Define the files and then open them
     FILE *file;
     FILE *file_output;
+    file = (fopen(in, "r"));
+    file_output = fopen(out, "w");
 
     long filesize;
 
-    file_output = fopen("/home/mingtao/decoded", "w");
-
-    file = (fopen("/home/mingtao/xxx", "r"));
     if (file == NULL) {
         printf("File opening error.\n");
     }
 
-    fseek(file, 0L, SEEK_END);
+    // get file size
+    fseek(file, 0, SEEK_END);
     filesize = ftell(file);
 
-    printf("%ld\n", filesize);
+    fseek(file, 0, SEEK_SET);
 
-    fseek(file, -8L, SEEK_END);
-    //fread(buf,  8 , 1,file);
-    uint64_t a;
-    fread(&a, 8, 1, file);
-    printf("len_encoded：\n");
-    for (int i = 1; i <= 64; i++) {
-        printf("%d", (int)(a >> (64 - i)) & 1);
-    }
-    printf("\n");
-    uint64_t len_encoded = 0;
-    for (int i = 0; i < 8; i++) {
-        len_encoded <<= 8;
-        len_encoded += (a >> (i * 8)) & 0xff;
-    }
-    printf("len_encoded：\n");
-    for (int i = 1; i <= 64; i++) {
-        printf("%d", (int)(len_encoded >> (64 - i)) & 1);
-    }
-    printf("\n");
-    //printf("%" PRIu64 "\n", decode(len_encoded));
-    uint64_t original_bytes = decode(len_encoded) / 8;
-    uint64_t unit_len = original_bytes / 8;
-    uint8_t unit_len_extra = (uint8_t)(original_bytes % 8);
+    uint64_t flag1, flag2, flag3, flag;
+    fread(&flag1, 1, 8, file);
+    fread(&flag2, 1, 8, file);
+    fread(&flag3, 1, 8, file);
 
-    fseek(file, 0L, SEEK_SET);
+    if (flag1 == flag2 || flag1 == flag3) {
+        flag = flag1;
+    } else if (flag2 == flag3){
+        flag = flag2;
+    } else {
+        /**
+         * @todo throw error
+         */
+        printf("error1\n");
+        return;
+    }
+
+    flag = ntohl64(flag);
+
+    des_decrypt_file(&flag);
+
+    uint64_t len = flag / 8;
+    uint64_t remain = 8 - len % 8;
+
+    if (len + 24 + remain != filesize) {
+        /**
+         * @todo throw error
+         */
+        printf("error2\n");
+        return;
+    }
+
+    uint64_t unit_len = len / 8;
+    uint8_t unit_len_extra = (uint8_t)(len % 8);
+
     uint64_t content;
-    uint64_t content_decoded;
     for (uint64_t i = 0; i < unit_len; i++) {
-        fread(&content, 8, 1, file);
-        uint64_t content2 = 0;
-        for (int j = 0; j < 8; j++) {
-            content2 <<= 8;
-            content2 += (content >> (j * 8)) & 0xff;
-        }
-        content_decoded = decode(content2);
-        uint64_t content_decoded2 = 0;
-        for (int j = 0; j < 8; j++) {
-            content_decoded2 <<= 8;
-            content_decoded2 += (content_decoded >> (j * 8)) & 0xff;
-        }
-        fwrite(&content_decoded2, 8, 1, file_output);
+        fread(&content, 1, 8, file);
+        content = ntohl64(content);
+
+        des_decrypt_file(&content);
+
+        content = ntohl64(content);
+
+        fwrite(&content, 1, 8, file_output);
     }
     uint8_t content_decoded_8;
-    fread(&content, 8, 1, file);
-    //content_decoded = decode(content);
-    uint64_t content2 = 0;
-    for (int j = 0; j < 8; j++) {
-        content2 <<= 8;
-        content2 += (content >> (j * 8)) & 0xff;
-    }
-    content_decoded = decode(content2);
-    uint64_t content_decoded2 = 0;
-    for (int j = 0; j < 8; j++) {
-        content_decoded2 <<= 8;
-        content_decoded2 += (content_decoded >> (j * 8)) & 0xff;
-    }
+    fread(&content, 1, 8, file);
+
+    content = ntohl64(content);
+
+    des_decrypt_file(&content);
+
+    /**
+     * The reason why I not use ntohl64 here is:
+     * Following data are written by byte.
+     */
     for (uint8_t i = 0; i < unit_len_extra; i++) {
-        content_decoded_8 = (uint8_t)((content_decoded >> ((7-i)*8)) & 0xff);
+        content_decoded_8 = (uint8_t)((content >> ((7-i)*8)) & 0xff);
         fwrite(&content_decoded_8, 1, 1, file_output);
     }
 
@@ -149,95 +160,54 @@ void decode_file() {
     fclose(file_output);
 }
 
+
 char* encrypt_file(char *file_in, char *file_out) {
-/*
-    uv_loop_t* loop;
-
-    uv_fs_t open_req;
-    uv_fs_t read_req;
-
-    loop = uv_default_loop();
-    printf("daa");
-    int r = uv_fs_open(loop, &open_req, file_in, O_RDONLY, S_IRUSR, NULL);
-    printf("r: %d\n", open_req.result);
-    uint32_t a = 0;
-    uv_buf_t iov = uv_buf_init(&a, sizeof(a));
-    uv_fs_read(uv_default_loop(), &read_req, open_req.result,
-               &iov, 1, -1, NULL);
-    printf("%x",a);
-    //sprintf(file_in, "%x", a);
-
-    return NULL;
-    */
+    // Define the file handler and then open them
 	FILE *file;
 	FILE *file_output;
 
-    file_output = fopen(file_out, "w");
-    file = fopen(file_in, "r");
-    printf("%d\n", file_output == NULL);
-    printf(file_in);
-    printf("%d\n", file == NULL);
+    // remove the output file if it exists
+    remove(file_out);
 
-    //return NULL;
-	/*
-    if ((file = open(file_path, O_RDONLY, 0)) == -1) {
-        printf("File opening error.\n");
-    }
-	*/
+    file = fopen(file_in, "r");
+    file_output = fopen(file_out, "w");
+
+    // reserve the space for flag
+    fseek(file_output, 24, SEEK_CUR);
+
     ssize_t n;
     uint64_t content;
-    uint64_t result;
 
+    // Record the length of plaintext
     uint64_t total_len = 0;
-    while ((n = fread(&content, 8, 1, file)) > 0) {
-        ssize_t remain = 8 - n;
 
-        uint64_t content2 = 0;
-        for (int i = 0; i < 8; i++) {
-            content2 <<= 8;
-            content2 += (content >> (i * 8)) & 0xff;
-        }
-        des_encrypt_file(&content2);
-        uint64_t result2 = 0;
-        for (int i = 0; i < 8; i++) {
-            result2 <<= 8;
-            result2 += (content2 >> (i * 8)) & 0xff;
+    while ((n = fread(&content, 1, 8, file)) > 0) {
+        if (n < 8) {
+            // fill zeros
+            total_len += n * 8;
+            content = content << (64 - n * 8) >> (64 - n * 8);
+        } else {
+            total_len += 64;
         }
 
-        total_len += n * 8;
+        // change the order
+        content = ntohl64(content);
+        des_encrypt_file(&content);
 
-        fwrite(&result2, sizeof(result2), 1, file_output );
-
+        uint64_t result = ntohl64(content);
+        fwrite(&result, sizeof(result), 1, file_output);
     }
-    file_in[0] = (char)((n==0)+0x30);
-    file_in[1] = (char)((file == NULL)+0x30);
-    file_in[2] = '\0';
 
     des_encrypt_file(&total_len);
-    uint8_t len_encoded_byte;
-    for (int i = 7; i >= 0; i--) {
-        len_encoded_byte = (uint8_t)((total_len >> i * 8) & 0xff);
-        fwrite(&len_encoded_byte, sizeof(len_encoded_byte), 1, file_output);
-    }
-    //printf("%" PRIu64 "\n", total_len);
-    /*
-    printf("len_encoded：\n");
-    for (int i = 1; i <= 64; i++) {
-        printf("%d", (int)(total_len >> (64 - i)) & 1);
-    }
-    printf("\n");
-     */
+    total_len = ntohl64(total_len);
+
+    // fill the flags
+    fseek(file_output, 0, SEEK_SET);
+    fwrite(&total_len, 8, 1, file_output);
+    fwrite(&total_len, 8, 1, file_output);
+    fwrite(&total_len, 8, 1, file_output);
 
     fclose(file);
     fclose(file_output);
     return NULL;
-}
-
-void print(uint64_t bits) {
-    char output_char[16];
-    for (int i = 0; i < 16; i++) {
-        uint8_t num = (uint8_t)((bits >> ((15 - i) * 4)) & 0xf);
-        sprintf(&output_char[i], "%x", num);
-    }
-    printf(output_char);
 }

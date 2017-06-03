@@ -88,6 +88,10 @@ namespace demo {
 			cb->Call(Null(isolate), argc, argv);
 		} else if (!strcmp(mode, "-df")) {
 			//decrypt_file(in, out);
+            decrypt_file(in, out);
+			const unsigned argc = 1;
+			Local<Value> argv[argc] = { String::NewFromUtf8(isolate, in) };
+			cb->Call(Null(isolate), argc, argv);
 		}
 	}
 

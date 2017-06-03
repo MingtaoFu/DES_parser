@@ -114,7 +114,6 @@ try {
             if (!$(this).val()) return;
             save_path_DOM.value = $(this).val();
         });
-
         chooser.trigger('click');
     });
 
@@ -124,7 +123,11 @@ try {
             alert(e);
         });
     });
-
+    document.querySelector("#file-decrypt-btn").addEventListener("click", function() {
+        file_operation("-df", file_key_DOM.value,  open_path_DOM.value, save_path_DOM.value, function (e) {
+            alert(e);
+        });
+    });
 
 } catch (e) {
 	document.write(e);
