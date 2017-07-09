@@ -1,4 +1,0 @@
-/home/mingtao/CLionProjects/DES_parser/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/mingtao/CLionProjects/DES_parser/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/mingtao/CLionProjects/DES_parser/cmake-build-debug/CMakeFiles/ip_cap.dir
-/home/mingtao/CLionProjects/DES_parser/cmake-build-debug/CMakeFiles/DES_parser.dir

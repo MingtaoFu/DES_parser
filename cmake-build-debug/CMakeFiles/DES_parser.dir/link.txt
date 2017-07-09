@@ -1,1 +1,0 @@
-/usr/lib/hardening-wrapper/bin/cc  -g   CMakeFiles/DES_parser.dir/main.c.o  -o DES_parser 
