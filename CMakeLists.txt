@@ -3,8 +3,7 @@ project(DES_parser)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.c)
-add_executable(DES_parser ${SOURCE_FILES})
+set(SOURCE_FILES main.c tables.h gui.c main.h interface.c core.c)
 
 cmake_minimum_required(VERSION 3.5)
 project(DES_parser)
@@ -19,7 +18,6 @@ message(staus "GTK3_INCLUDE_DIRS = ${GTK3_INCLUDE_DIRS}")
 link_directories(${GTK3_LIBRARY_DIRS})
 add_definitions(${GTK3_CFLAGS_OTHER})
 
-set(SOURCE_FILES main.c)
-add_executable(ip_cap ${SOURCE_FILES})
-target_link_libraries(ip_cap pthread)
-target_link_libraries(ip_cap ${GTK3_LIBRARIES})
+add_executable(DES_parser ${SOURCE_FILES})
+target_link_libraries(DES_parser pthread)
+target_link_libraries(DES_parser ${GTK3_LIBRARIES})
