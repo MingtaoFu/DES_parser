@@ -73,19 +73,20 @@ uint64_t ntohl64(uint64_t host) {
     return ret;
 }
 
-void decrypt_file(char* in, char* out) {
+void decrypt_file(char* in, char* out, char* log) {
     remove(out);
 
     // Define the files and then open them
     FILE *file;
     FILE *file_output;
-    file = (fopen(in, "r"));
-    file_output = fopen(out, "w");
+    file = (fopen(in, "rb"));
+    file_output = fopen(out, "wb");
 
     long filesize;
 
     if (file == NULL) {
-        printf("File opening error.\n");
+        sprintf(log, "Cannot open file");
+        return;
     }
 
     // get file size
@@ -104,10 +105,7 @@ void decrypt_file(char* in, char* out) {
     } else if (flag2 == flag3){
         flag = flag2;
     } else {
-        /**
-         * @todo throw error
-         */
-        printf("error1\n");
+        sprintf(log, "Voting failed");
         return;
     }
 
@@ -116,13 +114,10 @@ void decrypt_file(char* in, char* out) {
     des_decrypt_file(&flag);
 
     uint64_t len = flag / 8;
-    uint64_t remain = 8 - len % 8;
+    uint64_t remain = (8 - len % 8) % 8;
 
     if (len + 24 + remain != filesize) {
-        /**
-         * @todo throw error
-         */
-        printf("error2\n");
+        sprintf(log, "Invalid encrypting format");
         return;
     }
 
@@ -161,16 +156,22 @@ void decrypt_file(char* in, char* out) {
 }
 
 
-char* encrypt_file(char *file_in, char *file_out) {
+void encrypt_file(char *file_in, char *file_out, char* log) {
     // Define the file handler and then open them
 	FILE *file;
 	FILE *file_output;
 
+
     // remove the output file if it exists
     remove(file_out);
 
-    file = fopen(file_in, "r");
-    file_output = fopen(file_out, "w");
+    file = fopen(file_in, "rb");
+
+    if(file == NULL) {
+        sprintf(log, "Cannot open file");
+        return;
+    }
+    file_output = fopen(file_out, "wb");
 
     // reserve the space for flag
     fseek(file_output, 24, SEEK_CUR);
@@ -209,5 +210,4 @@ char* encrypt_file(char *file_in, char *file_out) {
 
     fclose(file);
     fclose(file_output);
-    return NULL;
 }

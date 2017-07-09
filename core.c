@@ -178,13 +178,10 @@ uint32_t loop_lmov(uint32_t input, int num) {
 
 uint8_t char2num(char ch) {
     if (ch >= 48 && ch <= 57) {
-        // 数字
         return (uint8_t)(ch - 48);
     } else if (ch >= 97 && ch <= 102) {
-        // 小写字母
         return (uint8_t)(ch - 87);
     } else if (ch >= 65 && ch <= 70) {
-        // 大写字母
         return (uint8_t)(ch - 55);
     }  else {
         printf("input error\n");
@@ -288,7 +285,6 @@ void init_key(uint64_t key) {
         k_b = loop_lmov(k_b, mov[i]);
         K_list[i] = pc_2(k_a, k_b);
 
-        // 存储到storage中
         for (int j = 0; j < 6; j++) {
             sprintf(&sto.keys[i][j*3], "%02x ", (uint8_t)((K_list[i] >> ((5 - j) * 8)) & 0xff));
         }

@@ -66,7 +66,6 @@ namespace demo {
 	}
 
 	void file_operation(const FunctionCallbackInfo<Value>& args) {
-		printf("1\n");
 		Isolate* isolate = args.GetIsolate();
 
 		String::Utf8Value v8_mode(args[0]->ToString());
@@ -81,16 +80,17 @@ namespace demo {
 
 		init_key(char2bit(key));
 
+		char result[30] = "";
 		if(!strcmp(mode, "-ef")) {
-			encrypt_file(in, out);
+			encrypt_file(in, out, result);
 			const unsigned argc = 1;
-			Local<Value> argv[argc] = { String::NewFromUtf8(isolate, in) };
+			Local<Value> argv[argc] = { String::NewFromUtf8(isolate, result) };
 			cb->Call(Null(isolate), argc, argv);
 		} else if (!strcmp(mode, "-df")) {
 			//decrypt_file(in, out);
-            decrypt_file(in, out);
+            decrypt_file(in, out, result);
 			const unsigned argc = 1;
-			Local<Value> argv[argc] = { String::NewFromUtf8(isolate, in) };
+			Local<Value> argv[argc] = { String::NewFromUtf8(isolate, result) };
 			cb->Call(Null(isolate), argc, argv);
 		}
 	}
@@ -112,14 +112,6 @@ namespace demo {
 		} else if (!strcmp(mode, "-dn")) {
 			decrypt_num(plain);
 		}
-
-		//args.GetReturnValue().Set(String::NewFromUtf9(isolate, plain));
-
-		/*
-		Handle<v8::Object > v8Obj = v8::Object::New();
-		v8Obj->Set(String::NewFromUtf8(isolate, "key"), 1);
-		args.GetReturnValue().Set(v8Obj);
-		 */
 
 		Local<Object> v8_storage = Object::New(isolate);
 		Local<Array> v8_storage_keys = Array::New(isolate);

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Hello World!</title>
+		<title>DES</title>
+        <meta charset="utf-8">
 		<link rel="stylesheet" href="./styles/bootstrap.min.css">
 		<!--<link rel="stylesheet" href="./styles/bootstrap-theme.min.css">-->
 		<style>
@@ -29,7 +30,7 @@
 				margin-top: 12px;
 			}
 			#file-form label {
-				width: 30px;
+				width: 20px;
 			}
 		</style>
 	</head>
@@ -87,12 +88,12 @@
 			</div>
 		</nav>
 		-->
-		<div id="scale-container" style="width:1000px;height:650px;overflow:hidden;margin-top:15px">
+		<div id="scale-container" style="width:1000px;height:660px;overflow:hidden;margin-top:15px">
 		<div class="container" style="transform:scale(0.85);transform-origin:left top;width:1170px!important">
 			<div class="row">
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 					<div class="panel panel-primary">
-						<div class="panel-heading">DATA ENCRIPTING</div>
+						<div class="panel-heading">DATA ENCRYPTING</div>
 						<div class="panel-body">
 							<form class="form-inline" data-toggle="validator" onsubmit="return false">
 								<div class="row">
@@ -100,7 +101,7 @@
 										<div class="form-group mb10">
 											<label for="data-input">IN</label>
 											<input pattern="^[0-9a-fA-F]{16}$" value="abcdef1234567890" required
-                                                   class="form-control" id="data-input" placeholder="16 hex">
+                                                   class="form-control input-data" id="data-input" placeholder="16 hex">
 										</div>
 										<div class="form-group">
 											<label for="data-output">OUT</label>
@@ -110,7 +111,7 @@
 									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 										<div class="form-group mb10">
 											<label for="data-key">KEY</label>
-											<input class="form-control" pattern="^[0-9a-fA-F]{16}$" required
+											<input class="form-control input-data" pattern="^[0-9a-fA-F]{16}$" required
                                                    id="data-key" placeholder="16 hex" value="aaaaaaaaaaaaaaaa">
 										</div>
 										<button type="submit" class="btn btn-primary" id="data-encrypt-btn">Encrypt</button>
@@ -141,22 +142,22 @@
 											<b>15:</b> 
 										</div>
 										<div id="keys-container" class="" style="display:inline-block;">
-											<div>12 34 56 78 90 ab</div>
-											<div>12 34 56 78 90 ab</div>
-											<div>12 34 56 78 90 ab</div>
-											<div>12 34 56 78 90 ab</div>
-											<div>10 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00</div>
+											<div>4f 6d 35 2a fd ab</div>
+											<div>4f e5 2d 2e 7d ab</div>
+											<div>cb 85 af ae 59 73</div>
+											<div>f9 8a ab c7 cb 72</div>
+											<div>b1 ba aa d5 8f 58</div>
+											<div>b0 3e d6 d9 96 5c</div>
+											<div>74 7e 54 59 f6 ac</div>
+											<div>46 f5 74 38 7c ad</div>
+											<div>c6 e5 75 3a 7c b5</div>
+											<div>cf c7 33 ab 69 b3</div>
+											<div>ef 93 ab a7 6b 13</div>
+											<div>bb 92 cb f7 03 56</div>
+											<div>39 5a da d5 83 ce</div>
+											<div>34 79 dc 54 b6 cd</div>
+											<div>16 6d 55 7a b4 ed</div>
+											<div>5e 6d 55 6a f4 af</div>
 										</div>
 									</div>
 								</div>
@@ -185,26 +186,26 @@
 											<b>OUTPUT :</b> 
 										</div>
 										<div id="state-container" style="display:inline-block">
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
-											<div>10 00 00 00 00 00 00 00</div>
+											<div>ab cd ef 12 34 56 78 90</div>
+											<div>66 f8 36 07 87 55 47 2d</div>
+											<div>87 55 47 2d e4 70 f3 cf</div>
+											<div>e4 70 f3 cf 7e 52 c1 f6</div>
+											<div>7e 52 c1 f6 c7 2e 45 42</div>
+											<div>c7 2e 45 42 ed ba 84 23</div>
+											<div>ed ba 84 23 02 b1 02 17</div>
+											<div>02 b1 02 17 0e 44 a3 90</div>
+											<div>0e 44 a3 90 1b ce 5a 5e</div>
+											<div>1b ce 5a 5e 12 fc b5 6d</div>
+											<div>12 fc b5 6d e6 da f4 3a</div>
+											<div>e6 da f4 3a c7 80 52 4f</div>
+											<div>c7 80 52 4f 39 49 5e 25</div>
+											<div>39 49 5e 25 2e 35 d0 e3</div>
+											<div>2e 35 d0 e3 db e3 1b 5f</div>
+											<div>db e3 1b 5f 1a 33 07 94</div>
+											<div>1a 33 07 94 86 d6 66 e1</div>
+											<div>65 0c 55 69 86 d6 66 e1</div>
+											<div>47 a8 fc 11 24 4b 6f a2</div>
+											<div>47 a8 fc 11 24 4b 6f a2</div>
 										</div>
 									</div>
 								</div>
@@ -212,7 +213,7 @@
 						</div> <!-- panel body -->
 					</div> <!-- panel -->
 					<div class="panel panel-default">
-						<div class="panel-heading">FILE ENCRIPTING</div>
+						<div class="panel-heading">FILE ENCRYPTING</div>
 						<div class="panel-body">
 							<form id="file-form" class="form-inline" data-toggle="validator" onsubmit="return false">
 								<div class="row">
@@ -220,7 +221,7 @@
 										<div class="form-group mb10">
 											<label for="open-path">IN</label>
 											<div class="input-group">
-												<input type="text" class="form-control" id="open-path"
+												<input type="text" class="form-control input-data" id="open-path"
                                                        required placeholder="file path">
 												<span class="input-group-btn">
 													<button class="btn btn-default" type="button" id="open-btn">OPEN</button>
@@ -243,7 +244,7 @@
 									<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5" style="padding-left:5px">
 										<div class="form-group mb10">
 											<label for="file-key">KEY</label>
-											<input class="form-control" id="file-key" required  pattern="^[0-9a-fA-F]{16}$"
+											<input class="form-control input-data" id="file-key" required  pattern="^[0-9a-fA-F]{16}$"
                                                    placeholder="16 hex" style="width: 170px">
 										</div>
 										<button type="submit" class="btn btn-primary" id="file-encrypt-btn">Encrypt</button>
@@ -263,11 +264,11 @@
 									<form id="F-form" data-toggle="validator" >
 										<div class="form-group">
 											<label for="f-R">R</label>
-											<input class="form-control" id="f-R" placeholder="8 hex" name="R" required pattern="^[0-9a-fA-F]{8}$">
+											<input class="form-control input-data" id="f-R" placeholder="8 hex" name="R" required pattern="^[0-9a-fA-F]{8}$">
 										</div>
 										<div class="form-group">
 											<label for="f-K">K</label>
-											<input class="form-control" id="f-K" placeholder="12 hex" name="K" required pattern="^[0-9a-fA-F]{12}$">
+											<input class="form-control input-data" id="f-K" placeholder="12 hex" name="K" required pattern="^[0-9a-fA-F]{12}$">
 										</div>
 										<div class="form-group">
 											<label for="f-result">RESULT</label>
@@ -283,7 +284,7 @@
 									<form id="E-form"  data-toggle="validator" >
 										<div class="form-group">
 											<label for="e-r">R</label>
-											<input class="form-control" id="e-r" name="r" placeholder="8 hex" required pattern="^[0-9a-fA-F]{8}$">
+											<input class="form-control input-data" id="e-r" name="r" placeholder="8 hex" required pattern="^[0-9a-fA-F]{8}$">
 										</div>
 										<div class="form-group">
 											<label for="e-result">RESULT</label>
@@ -301,11 +302,13 @@
 									<form id="XOR-form"  data-toggle="validator" >
 										<div class="form-group">
 											<label for="xor-1">PARAM 1</label>
-											<input class="form-control" id="xor-1" name="param1" placeholder="8 hex">
+											<input class="form-control input-data" id="xor-1" name="param1" placeholder="8 hex"
+												   required pattern="^[0-9a-fA-F]{8}$">
 										</div>
 										<div class="form-group">
 											<label for="xor-2">PARAM 2</label>
-											<input class="form-control" id="xor-2" name="param2" placeholder="8 hex">
+                                            <input class="form-control input-data" id="xor-2" name="param2" placeholder="8 hex"
+                                                   required pattern="^[0-9a-fA-F]{8}$">
 										</div>
 										<div class="form-group">
 											<label for="xor-result">RESULT</label>
@@ -321,12 +324,12 @@
                                     <form id="SBOX-form"  data-toggle="validator" >
                                         <div class="form-group">
                                             <label for="sbox-input">INPUT</label>
-                                            <input class="form-control" id="sbox-input" name="input" placeholder="12 hex"
+                                            <input class="form-control input-data" id="sbox-input" name="input" placeholder="12 hex"
 												   required pattern="^[0-9a-fA-F]{12}$">
                                         </div>
                                         <div class="form-group">
                                             <label for="sbox-result">RESULT</label>
-                                            <input class="form-control" id="sbox-result" readonly name="result">
+                                            <input class="form-control input-data" id="sbox-result" readonly name="result">
                                         </div>
                                         <button type="submit" class="btn btn-default" name="btn">Submit</button>
                                     </form>

@@ -13,7 +13,12 @@ try {
 	var keys_container = document.querySelectorAll("#keys-container div");
 	var states_container = document.querySelectorAll("#state-container div");
 
-	document.querySelector("#data-encrypt-btn").addEventListener("click", function() {
+    $(document).bind("input", ".input-data", function (e) {
+        e.target.value = e.target.value.replace(/ /g, "");
+    });
+
+
+    document.querySelector("#data-encrypt-btn").addEventListener("click", function() {
 		if ($(this).hasClass("disabled")) {
 		    return false;
         }
@@ -66,6 +71,9 @@ try {
     });
 
 	document.querySelector("#XOR-form").addEventListener("submit", function (e) {
+	    if ($("button", this).hasClass("disabled")) {
+		    return false;
+        }
 	    e.preventDefault();
 	    this.result.value = XOR_computing(this.param1.value, this.param2.value);
     });
@@ -119,13 +127,27 @@ try {
 
     var file_key_DOM = document.querySelector("#file-key");
     document.querySelector("#file-encrypt-btn").addEventListener("click", function() {
+        if ($(this).hasClass("disabled")) {
+            return false;
+        }
         file_operation("-ef", file_key_DOM.value,  open_path_DOM.value, save_path_DOM.value, function (e) {
-            alert(e);
+            if (e === "") {
+                alert("Encryption finished")
+            } else {
+                alert(e);
+            }
         });
     });
     document.querySelector("#file-decrypt-btn").addEventListener("click", function() {
+        if ($(this).hasClass("disabled")) {
+            return false;
+        }
         file_operation("-df", file_key_DOM.value,  open_path_DOM.value, save_path_DOM.value, function (e) {
-            alert(e);
+            if (e === "") {
+                alert("Decryption finished")
+            } else {
+                alert(e);
+            }
         });
     });
 

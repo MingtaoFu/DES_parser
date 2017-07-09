@@ -39,8 +39,8 @@ void e_computing(char* a, char* b);
 void sbox_computing(char* input, char* output);
 uint64_t E(uint32_t input);
 uint32_t S_box(uint64_t input);
-char* encrypt_file(char *file_in, char *file_out);
-void decrypt_file(char*in, char* out);
+void decrypt_file(char* in, char* out, char* log);
+void encrypt_file(char *file_in, char *file_out, char* result);
 
 
 
